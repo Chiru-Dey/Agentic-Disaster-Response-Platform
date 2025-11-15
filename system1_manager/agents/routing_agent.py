@@ -1,32 +1,18 @@
 # system1_manager/agents/routing_agent.py
-import os
 from google.adk.agents import LlmAgent
-# In a real implementation, you would use:
-# from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
-# from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
-# from mcp import StdioServerParameters
-
-# Placeholder for a custom MCP Toolset for OpenStreetMap
-class PlaceholderOsmMcpToolset:
-    def __init__(self):
-        self.name = "PlaceholderOpenStreetMapTool"
-        self.description = "A placeholder MCP tool for OpenStreetMap to get directions."
-
-    def get_directions(self, origin: str, destination: str) -> str:
-        """Calculates the best route between an origin and a destination."""
-        # In a real tool, this would call the OpenStreetMap API.
-        return f"Route calculated from {origin} to {destination} via primary roads. Estimated time: 45 minutes."
-
-# The API Key would be for a service like OpenRouteService for OSM
-OSM_API_KEY = os.environ.get("OSM_API_KEY")
-if not OSM_API_KEY:
-    print("Warning: OSM_API_KEY environment variable not set. Using placeholder tool.")
+from system1_manager.tools.logistics_tools import find_optimal_route
 
 routing_agent = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-1.5-flash",
     name="RoutingAgent",
-    description="Calculates travel routes, times, and distances using OpenStreetMap.",
-    instruction="You are a dispatch router. Based on the user's request, determine a viable delivery route using your tools and provide a summary.",
-    tools=[PlaceholderOsmMcpToolset()],
+    description="A specialist agent that finds the optimal route for resource delivery.",
+    instruction=(
+        "You are a logistics routing specialist. Your task is to find the best route for delivering resources.\n"
+        "You will receive a structured JSON object with the request details: {parsed_request}\n"
+        "Extract the 'origin' and 'destination' values from this object.\n"
+        "You MUST use the `find_optimal_route` tool with these values and assume the vehicle is a 'truck'.\n"
+        "Based on the tool's output, provide a clear, human-readable summary of the optimal route."
+    ),
+    tools=[find_optimal_route],
     output_key="routing_research"
 )
