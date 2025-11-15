@@ -1,0 +1,22 @@
+[
+  {
+    "test_case_id": "logistics_workflow_standard",
+    "expected_tool_calls": [
+      {
+        "name": "get_inventory_levels",
+        "args": {
+          "resource_type": "water"
+        }
+      },
+      {
+        "name": "find_optimal_route",
+        "args": {
+          "origin": "main_warehouse",
+          "destination": "shelter_b",
+          "vehicle": "truck"
+        }
+      }
+    ],
+    "expected_response": "The request to send 500 units of water from the main_warehouse to shelter_b has been processed. Inventory levels are sufficient, and an optimal route has been calculated. The distribution workflow is now initiating the delivery."
+  }
+]
