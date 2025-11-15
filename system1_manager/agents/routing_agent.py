@@ -26,6 +26,7 @@ routing_agent = LlmAgent(
     model="gemini-2.5-flash",
     name="RoutingAgent",
     description="Calculates travel routes, times, and distances using OpenStreetMap.",
-    instruction="You are a dispatch router. Use the OpenStreetMap tools to find the best routes for delivery vehicles. Prioritize safety and speed.",
-    tools=[PlaceholderOsmMcpToolset()]
+    instruction="You are a dispatch router. Based on the user's request, determine a viable delivery route using your tools and provide a summary.",
+    tools=[PlaceholderOsmMcpToolset()],
+    output_key="routing_research"
 )

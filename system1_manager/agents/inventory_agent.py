@@ -22,6 +22,7 @@ inventory_agent = LlmAgent(
     model="gemini-2.5-flash",
     name="InventoryAgent",
     description="Manages and queries resource inventory levels (food, water, medical).",
-    instruction="You are an inventory specialist. Use your tools to answer questions about stock levels and resource availability. You are not permitted to write or delete data.",
-    tools=[PlaceholderBigQueryToolset()]
+    instruction="You are an inventory specialist. Based on the user's request, check for resource availability using your tools and provide a summary.",
+    tools=[PlaceholderBigQueryToolset()],
+    output_key="inventory_research"
 )
