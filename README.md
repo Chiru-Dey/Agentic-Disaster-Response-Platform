@@ -6,12 +6,23 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
 
 1. Clone the repository
 2. Install dependencies:
+3. ```bash
    pip install -r requirements.txt
-3. Configure environment variables (Firebase credentials, API keys)
-4. Run the three systems in separate terminals:
-   - System 1: cd system1_manager && uvicorn main:app --reload
-   - System 2: cd system2_support && python main.py
-   - System 3: cd system3_supervisor && python main.py
+   ```
+4. Configure environment variables (Firebase credentials, API keys)
+5. Run the three systems in separate terminals:
+   - System 1:
+     ```bash
+      cd system1_manager && uvicorn main:app --reload
+     ```
+   - System 2:
+     ```bash
+     cd system2_support && python main.py
+     ```
+   - System 3:
+   ```bash
+   cd system3_supervisor && python main.py
+   ```
 
 
 ---
