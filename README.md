@@ -6,7 +6,7 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
 
 1. Clone the repository
 2. Install dependencies:
-3. ```bash
+ ```bash
    pip install -r requirements.txt
    ```
 4. Configure environment variables (Firebase credentials, API keys)
@@ -20,9 +20,9 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
      cd system2_support && python main.py
      ```
    - System 3:
-   ```bash
-   cd system3_supervisor && python main.py
-   ```
+      ```bash
+      cd system3_supervisor && python main.py
+      ```
 
 
 ---
