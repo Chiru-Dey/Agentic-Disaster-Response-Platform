@@ -1,11 +1,15 @@
-# system2_support/tools/a2a_tool.py
-from google.adk.tools import A2aClientTool
+import httpx
 
-# This tool is a client that communicates with the System 1 A2A server.
-delegate_logistics_task = A2aClientTool(
-    name="delegate_logistics_task",
-    description="Delegates a detailed logistics request to the Core Logistics System for execution.",
-    url="http://127.0.0.1:8000/run_logistics", # URL of the System 1 server
-    request_body_format={"query": "{query}"}, # Maps tool input to the server's request body
-    response_format="The logistics task was successfully delegated. System 1 responded with: {response}"
-)
+SYSTEM1_URL = "http://127.0.0.1:8000/run_logistics"
+
+async def delegate_logistics_task(query: str) -> str:
+    """Delegates a detailed logistics request to the Core Logistics System (System 1) for execution.
+
+    Args:
+        query: The logistics request to send, in natural language.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.post(SYSTEM1_URL, json={"query": query})
+        response.raise_for_status()
+        data = response.json()
+    return f"The logistics task was successfully delegated. System 1 responded with: {data.get('response', '')}"
