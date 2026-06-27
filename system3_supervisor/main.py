@@ -1,44 +1,71 @@
-from pathlib import Path
+# system3_supervisor/main.py
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv()
 
-from .agents.supervisor_orchestrator import supervisor_orchestrator_agent
+import os
+import logging
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-import asyncio
+from .agents.supervisor_orchestrator import supervisor_orchestrator_agent
+
+os.environ["ADK_LOG_LEVEL"] = "DEBUG"
+logging.basicConfig(level=logging.DEBUG)
 
 APP_NAME = "system3_supervisor"
-USER_ID = "local-user"
 
-async def main():
-    print("Supervisor Orchestrator is running. Type your query or command.")
-    session_service = InMemorySessionService()
-    session = await session_service.create_session(app_name=APP_NAME, user_id=USER_ID)
+session_service = InMemorySessionService()
+runner = Runner(
+    app_name=APP_NAME,
+    agent=supervisor_orchestrator_agent,
+    session_service=session_service,
+)
 
-    runner = Runner(
-        app_name=APP_NAME,
-        agent=supervisor_orchestrator_agent,
-        session_service=session_service,
-    )
+app = FastAPI(
+    title="System 3: Supervisor (HITL)",
+    description="Human supervisor REST endpoint for dashboard queries and overrides.",
+    version="1.0.0",
+)
 
-    while True:
-        user_input = input("Supervisor> ")
-        if user_input.lower() in ["exit", "quit"]:
-            break
+class SuperviseRequest(BaseModel):
+    message: str
+    user_id: str = "supervisor"
+    session_id: Optional[str] = None
 
-        new_message = types.Content(role="user", parts=[types.Part(text=user_input)])
+class SuperviseResponse(BaseModel):
+    session_id: str
+    response: str
 
-        async for event in runner.run_async(
-            user_id=USER_ID,
-            session_id=session.id,
-            new_message=new_message,
-        ):
-            if event.content and event.content.parts:
-                for part in event.content.parts:
-                    if part.text:
-                        print(part.text, end="", flush=True)
-        print("\n")
+@app.post("/supervise", response_model=SuperviseResponse)
+async def supervise(request: SuperviseRequest):
+    session = None
+    if request.session_id:
+        session = await session_service.get_session(
+            app_name=APP_NAME, user_id=request.user_id, session_id=request.session_id
+        )
+    if session is None:
+        session = await session_service.create_session(app_name=APP_NAME, user_id=request.user_id)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    new_message = types.Content(role="user", parts=[types.Part(text=request.message)])
+
+    final_response = ""
+    async for event in runner.run_async(
+        user_id=request.user_id,
+        session_id=session.id,
+        new_message=new_message,
+    ):
+        if event.content and event.content.parts:
+            for part in event.content.parts:
+                if part.text:
+                    final_response += part.text
+
+    return SuperviseResponse(session_id=session.id, response=final_response)
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+# Run with: uvicorn system3_supervisor.main:app --host 127.0.0.1 --port 8002
