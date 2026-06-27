@@ -13,15 +13,15 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
 5. Run the three systems in separate terminals:
    - System 1:
      ```bash
-      cd system1_manager && uvicorn main:app --reload
+      uvicorn main:app --reload
      ```
    - System 2:
      ```bash
-     cd system2_support && python main.py
+      python main.py
      ```
    - System 3:
       ```bash
-      cd system3_supervisor && python main.py
+      python main.py
       ```
 
 
