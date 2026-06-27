@@ -6,7 +6,7 @@ from google.adk.agents.context import Context
 from google.adk.tools import preload_memory
 from google.genai import types
 from google.adk import Runner
-from agents.support_orchestrator import support_orchestrator_agent
+from .agents.support_orchestrator import support_orchestrator_agent
 
 APP_NAME = "system2_support"
 USER_ID = "local-user"

@@ -9,7 +9,7 @@ from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
-from agents.logistics_orchestrator import logistics_orchestrator_agent
+from .agents.logistics_orchestrator import logistics_orchestrator_agent
 
 # Enable verbose logging for the ADK
 os.environ["ADK_LOG_LEVEL"] = "DEBUG"

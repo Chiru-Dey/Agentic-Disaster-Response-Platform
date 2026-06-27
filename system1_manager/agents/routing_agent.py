@@ -1,6 +1,6 @@
 # system1_manager/agents/routing_agent.py
 from google.adk.agents import LlmAgent
-from system1_manager.tools.logistics_tools import find_optimal_route
+from ..tools.logistics_tools import find_optimal_route
 
 routing_agent = LlmAgent(
     model="gemini-1.5-flash",

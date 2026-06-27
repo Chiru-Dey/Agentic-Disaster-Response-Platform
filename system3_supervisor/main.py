@@ -1,5 +1,5 @@
 # system3_supervisor/main.py
-from agents.supervisor_orchestrator import supervisor_orchestrator_agent
+from .agents.supervisor_orchestrator import supervisor_orchestrator_agent
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types

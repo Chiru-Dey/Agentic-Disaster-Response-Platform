@@ -1,6 +1,6 @@
 from google.adk.tools import exit_loop
 from google.adk.agents import LlmAgent
-from tools.supervisor_tools import dashboard_toolset, override_toolset
+from ..tools.supervisor_tools import dashboard_toolset, override_toolset
 
 dashboard_agent = LlmAgent(
     model="gemini-2.5-flash-lite",

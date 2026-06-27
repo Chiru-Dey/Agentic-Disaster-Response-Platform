@@ -1,6 +1,6 @@
 # system1_manager/agents/inventory_agent.py
 from google.adk.agents import LlmAgent
-from system1_manager.tools.logistics_tools import get_inventory_levels
+from ..tools.logistics_tools import get_inventory_levels
 
 inventory_agent = LlmAgent(
     model="gemini-1.5-flash",
