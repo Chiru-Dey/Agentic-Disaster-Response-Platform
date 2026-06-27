@@ -7,7 +7,7 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
 1. Clone the repository
 2. Install dependencies:
  ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 4. Configure environment variables (Firebase credentials, API keys)
 5. Run the three systems in separate terminals:
