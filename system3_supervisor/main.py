@@ -10,10 +10,11 @@ from typing import Optional
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from google.genai.errors import APIError
 from .agents.supervisor_orchestrator import supervisor_orchestrator_agent
 
-os.environ["ADK_LOG_LEVEL"] = "DEBUG"
-logging.basicConfig(level=logging.DEBUG)
+os.environ["ADK_LOG_LEVEL"] = "INFO"
+logging.basicConfig(level=logging.INFO)
 
 APP_NAME = "system3_supervisor"
 
@@ -52,15 +53,20 @@ async def supervise(request: SuperviseRequest):
     new_message = types.Content(role="user", parts=[types.Part(text=request.message)])
 
     final_response = ""
-    async for event in runner.run_async(
-        user_id=request.user_id,
-        session_id=session.id,
-        new_message=new_message,
-    ):
-        if event.content and event.content.parts:
-            for part in event.content.parts:
-                if part.text:
-                    final_response += part.text
+    try:
+        async for event in runner.run_async(
+            user_id=request.user_id,
+            session_id=session.id,
+            new_message=new_message,
+        ):
+            if event.content and event.content.parts:
+                for part in event.content.parts:
+                    if part.text:
+                        final_response += part.text
+    except APIError as e:
+        logging.error(f"API error occurred: {e}")
+        return SuperviseResponse(session_id=session.id, response="Model API error occurred. Please try again later.")
+
 
     return SuperviseResponse(session_id=session.id, response=final_response)
 
