@@ -1,6 +1,0 @@
-[
-  {
-    "test_case_id": "logistics_workflow_standard",
-    "query": "We need to send 500 units of water from the main_warehouse to shelter_b."
-  }
-]
