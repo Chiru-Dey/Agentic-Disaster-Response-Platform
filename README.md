@@ -13,15 +13,15 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
 5. Run the three systems in separate terminals:
    - System 1:
      ```bash
-      uvicorn main:app --reload
+      uvicorn system1_manager.main:app --host 127.0.0.1 --port 8000 
      ```
    - System 2:
      ```bash
-      python main.py
+      uvicorn system2_support.main:app --host 0.0.0.0 --port 8001
      ```
    - System 3:
       ```bash
-      python main.py
+      uvicorn system3_supervisor.main:app --host 0.0.0.0 --port 8002
       ```
 
 
