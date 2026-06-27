@@ -5,6 +5,7 @@ load_dotenv()
 import os
 import logging
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from google.adk import Runner
@@ -29,6 +30,14 @@ app = FastAPI(
     title="System 3: Supervisor (HITL)",
     description="Human supervisor REST endpoint for dashboard queries and overrides.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class SuperviseRequest(BaseModel):
