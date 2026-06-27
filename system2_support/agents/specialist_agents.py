@@ -27,7 +27,7 @@ chat_intake_agent = LlmAgent(
 )
 
 transcription_agent = LlmAgent(
-    model="gemini-3.5-live-translate-preview",
+    model="gemini-2.5-flash-lite",
     name="TranscriptionAgent",
     description="A specialist agent to create a text transcript from a call recording.",
     instruction="You receive an audio file reference. Transcribe it accurately."
