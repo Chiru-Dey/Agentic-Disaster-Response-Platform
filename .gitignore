@@ -1,2 +1,2 @@
 .venv/
-/crash course support/
+*.pyc
