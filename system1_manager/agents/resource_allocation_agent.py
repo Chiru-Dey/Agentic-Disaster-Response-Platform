@@ -1,9 +1,11 @@
 # system1_manager/agents/resource_allocation_agent.py
 
 from google.adk.agents import LlmAgent
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
 
 resource_allocation_agent = LlmAgent(
     model="gemini-2.5-flash",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="ResourceAllocationAgent",
     description="Decides on fair and efficient resource distribution plans based on available inventory and needs.",
     instruction=(

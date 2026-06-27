@@ -1,9 +1,11 @@
 from google.adk.tools import exit_loop
 from google.adk.agents import LlmAgent
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
 from ..tools.supervisor_tools import dashboard_toolset, override_toolset
 
 dashboard_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="DashboardAgent",
     description="Provides natural language summaries of operations by querying logistics data.",
     instruction=(
@@ -15,6 +17,7 @@ dashboard_agent = LlmAgent(
 
 override_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="OverrideAgent",
     description="Translates human commands into override actions on the Logistics Manager.",
     instruction=(
@@ -27,6 +30,7 @@ override_agent = LlmAgent(
 
 anomaly_check_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="AnomalyCheckAgent",
     instruction="Use a (simulated) tool to query the logistics databases for anomalies like stale requests or low inventory. Report 'No anomalies found.' or describe the specific problem.",
     output_key="anomaly_report"
@@ -34,6 +38,7 @@ anomaly_check_agent = LlmAgent(
 
 loop_decision_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="LoopDecisionAgent",
     instruction=(
         "You are a monitoring supervisor. Review the following anomaly report:\n{anomaly_report}\n\n"

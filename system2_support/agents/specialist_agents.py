@@ -1,9 +1,11 @@
 from google.adk.agents import LlmAgent
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
 from ..tools.firebase_logger import firebase_log_toolset
 from ..tools.a2a_tool import delegate_logistics_task
 
 voice_intake_agent = LlmAgent(
     model="gemini-2.5-flash-native-audio-preview-12-2025",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="VoiceIntakeAgent",
     description="A specialist agent for handling real-time voice calls to collect relief requests.",
     instruction=(
@@ -16,6 +18,7 @@ voice_intake_agent = LlmAgent(
 
 chat_intake_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="ChatIntakeAgent",
     description="A specialist agent for handling text-based chat to collect relief requests.",
     instruction=(
@@ -28,6 +31,7 @@ chat_intake_agent = LlmAgent(
 
 transcription_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="TranscriptionAgent",
     description="A specialist agent to create a text transcript from a call recording.",
     instruction="You receive an audio file reference. Transcribe it accurately."

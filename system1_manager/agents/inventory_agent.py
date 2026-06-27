@@ -1,9 +1,11 @@
 # system1_manager/agents/inventory_agent.py
 from google.adk.agents import LlmAgent
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
 from ..tools.logistics_tools import get_inventory_levels
 
 inventory_agent = LlmAgent(
     model="gemini-2.5-flash-lite",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="InventoryAgent",
     description="A specialist agent that checks inventory levels for requested resources.",
     instruction=(

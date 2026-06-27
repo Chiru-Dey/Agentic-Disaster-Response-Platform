@@ -1,4 +1,5 @@
 from google.adk.agents import LlmAgent, LoopAgent
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
 from .specialist_agents import (
     dashboard_agent,
     override_agent,
@@ -15,6 +16,7 @@ alert_agent = LoopAgent(
 
 supervisor_orchestrator_agent = LlmAgent(
     model="gemini-2.5-flash",
+    generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="SupervisorOrchestrator",
     description="Root agent for the supervisor system. Routes human supervisor's requests to the correct specialist agent.",
     instruction=(
