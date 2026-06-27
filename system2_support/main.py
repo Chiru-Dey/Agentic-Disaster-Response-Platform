@@ -1,4 +1,7 @@
-# system2_support/main.py
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 import asyncio
 from google.adk.sessions import InMemorySessionService
 from google.adk.memory import InMemoryMemoryService

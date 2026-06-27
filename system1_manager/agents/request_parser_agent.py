@@ -2,7 +2,7 @@
 from google.adk.agents import LlmAgent
 
 request_parser_agent = LlmAgent(
-    model="gemini-1.5-flash",
+    model="gemini-2.5-flash-lite",
     name="RequestParserAgent",
     description="Parses a natural language logistics request into a structured format.",
     instruction=(

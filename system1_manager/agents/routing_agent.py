@@ -3,7 +3,7 @@ from google.adk.agents import LlmAgent
 from ..tools.logistics_tools import find_optimal_route
 
 routing_agent = LlmAgent(
-    model="gemini-1.5-flash",
+    model="gemini-2.5-flash-lite",
     name="RoutingAgent",
     description="A specialist agent that finds the optimal route for resource delivery.",
     instruction=(

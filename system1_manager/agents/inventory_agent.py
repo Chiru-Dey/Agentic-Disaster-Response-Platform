@@ -3,7 +3,7 @@ from google.adk.agents import LlmAgent
 from ..tools.logistics_tools import get_inventory_levels
 
 inventory_agent = LlmAgent(
-    model="gemini-1.5-flash",
+    model="gemini-2.5-flash-lite",
     name="InventoryAgent",
     description="A specialist agent that checks inventory levels for requested resources.",
     instruction=(

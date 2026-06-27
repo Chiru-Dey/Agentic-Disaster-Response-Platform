@@ -1,4 +1,7 @@
-# system3_supervisor/main.py
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 from .agents.supervisor_orchestrator import supervisor_orchestrator_agent
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService

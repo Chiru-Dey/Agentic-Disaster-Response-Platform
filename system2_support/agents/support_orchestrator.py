@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from .specialist_agents import chat_intake_agent, voice_intake_agent
-from tools.a2a_tool import delegate_logistics_task
-from tools.firebase_logger import firebase_log_toolset
+from ..tools.a2a_tool import delegate_logistics_task
+from ..tools.firebase_logger import firebase_log_toolset
 
 support_orchestrator_agent = LlmAgent(
     model="gemini-2.5-flash",
