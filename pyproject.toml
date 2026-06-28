@@ -18,5 +18,3 @@ where = ["."]
 include = ["system1_manager*", "system2_support*", "system3_supervisor*"]
 exclude = ["evaluation*"]
 
-[project.scripts]
-system1 = "system1_manager.main:main"
