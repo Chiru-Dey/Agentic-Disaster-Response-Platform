@@ -1,10 +1,10 @@
 # system1_manager/agents/routing_agent.py
 from google.adk.agents import LlmAgent
-from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG, FallbackLlm
 from ..tools.logistics_tools import find_optimal_route
 
 routing_agent = LlmAgent(
-    model="gemini-2.5-flash-lite",
+    model=FallbackLlm(model="gemini-2.5-flash-lite", fallback_model="groq/llama-3.3-70b-versatile"),
     generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="RoutingAgent",
     description="A specialist agent that finds the optimal route for resource delivery.",

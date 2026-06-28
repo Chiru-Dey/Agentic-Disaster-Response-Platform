@@ -1,10 +1,10 @@
 # system1_manager/agents/distribution_workflow.py
 from google.adk.agents import LlmAgent, SequentialAgent
-from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG, FallbackLlm
 
 # A simple agent to validate the plan structure
 plan_validation_agent = LlmAgent(
-    model="gemini-2.5-flash-lite",
+    model=FallbackLlm(model="gemini-2.5-flash-lite", fallback_model="groq/llama-3.3-70b-versatile"),
     generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="PlanValidationAgent",
     instruction="Review the attached plan. Confirm all required fields (e.g., location, items, route) are present. Output 'pass' or 'fail'."
@@ -12,7 +12,7 @@ plan_validation_agent = LlmAgent(
 
 # A placeholder agent to update inventory status
 inventory_update_agent = LlmAgent(
-    model="gemini-2.5-flash-lite",
+    model=FallbackLlm(model="gemini-2.5-flash-lite", fallback_model="groq/llama-3.3-70b-versatile"),
     generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="InventoryUpdateAgent",
     instruction="Use a (simulated) BigQuery tool to reserve the items in the plan, moving them from 'available' to 'dispatched' status. Confirm completion."
@@ -21,7 +21,7 @@ inventory_update_agent = LlmAgent(
 
 # A placeholder agent to send the final dispatch
 dispatch_agent = LlmAgent(
-    model="gemini-2.5-flash-lite",
+    model=FallbackLlm(model="gemini-2.5-flash-lite", fallback_model="groq/llama-3.3-70b-versatile"),
     generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="DispatchAgent",
     instruction="Send the final, validated plan to the external dispatch API (simulated). Confirm dispatch."

@@ -1,11 +1,11 @@
 from google.adk.agents import LlmAgent
-from ..tools.retry_config import RESILIENT_GENERATION_CONFIG
+from ..tools.retry_config import RESILIENT_GENERATION_CONFIG, FallbackLlm
 from .specialist_agents import chat_intake_agent, voice_intake_agent
 from ..tools.a2a_tool import delegate_logistics_task
 from ..tools.firebase_logger import firebase_log_toolset
 
 support_orchestrator_agent = LlmAgent(
-    model="gemini-2.5-flash",
+    model=FallbackLlm(model="gemini-2.5-flash", fallback_model="groq/llama-3.3-70b-versatile"),
     generate_content_config=RESILIENT_GENERATION_CONFIG,
     name="SupportOrchestrator",
     description="Root agent for the support system. Routes user requests to the correct specialist agent or tool.",
