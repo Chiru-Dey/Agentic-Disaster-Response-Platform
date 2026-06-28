@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supervisor Console</title>
+<style>
+  :root { --bg:#0f172a; --panel:#1e293b; --accent:#38bdf8; --text:#e2e8f0; --muted:#94a3b8; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Segoe UI",Roboto,monospace,sans-serif; background:var(--bg); color:var(--text); }
+  #app { display:flex; flex-direction:column; height:100vh; }
+
+  #app.centered { justify-content:center; align-items:center; }
+  #app.centered #log { display:none; }
+  #app.centered #hero { display:block; text-align:center; margin-bottom:1.5rem; }
+  #app.centered form#composer { width:min(90vw, 480px); border-top:none; background:transparent; padding:0; }
+
+  #app:not(.centered) #hero { display:none; }
+  #app:not(.centered) { justify-content:flex-start; }
+
+  header { padding:1rem 1.25rem; border-bottom:1px solid #334155; }
+  header h1 { margin:0; font-size:1.1rem; color:var(--accent); }
+
+  #hero h1 { color:var(--accent); font-size:1.4rem; margin:0 0 0.4rem; }
+  #hero p { color:var(--muted); font-size:0.9rem; margin:0; }
+
+  #log { flex:1; overflow-y:auto; padding:1rem; font-size:0.9rem; }
+  .entry { margin-bottom:0.9rem; }
+  .entry .who { font-size:0.75rem; color:var(--muted); margin-bottom:0.15rem; }
+  .entry.you .who { color:var(--accent); }
+  .entry .text { white-space:pre-wrap; line-height:1.4; }
+  .entry.system .text { color:var(--muted); font-style:italic; font-size:0.85rem; }
+
+  form#composer { display:flex; gap:0.5rem; padding:0.75rem; background:var(--panel); border-top:1px solid #334155; transition:all 0.2s ease; }
+  #input { flex:1; padding:0.65rem 0.85rem; border:1px solid #334155; border-radius:8px; background:#0f172a; color:var(--text); font-size:0.9rem; }
+  #input:focus { outline:2px solid var(--accent); }
+  button { background:var(--accent); color:#0f172a; border:none; border-radius:8px; padding:0.65rem 1.1rem; font-weight:600; cursor:pointer; }
+  button:hover { background:#7dd3fc; }
+  button:disabled { opacity:0.5; cursor:default; }
+</style>
+</head>
+<body>
+  <div id="app" class="centered">
+    <header style="display:none" id="bar">
+      <h1>Supervisor Console</h1>
+    </header>
+    <div id="hero">
+      <h1>Supervisor Console</h1>
+      <p>Query operations, check status, or issue overrides.</p>
+    </div>
+    <div id="log"></div>
+    <form id="composer">
+      <input id="input" type="text" placeholder="Type your command here..." autocomplete="off" required />
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+  </div>
+<script>
+  const API_BASE = window.location.pathname.startsWith("/supervisor") ? "/supervisor" : "";
+  let sessionId = localStorage.getItem("supervisor_session_id") || null;
+  const appEl = document.getElementById("app");
+  const bar = document.getElementById("bar");
+  const log = document.getElementById("log");
+  const form = document.getElementById("composer");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("sendBtn");
+  let started = false;
+
+  function addEntry(text, role) {
+    const div = document.createElement("div");
+    div.className = "entry " + role;
+    const who = document.createElement("div");
+    who.className = "who";
+    who.textContent = role === "you" ? "You" : role === "agent" ? "Supervisor Agent" : "System";
+    const body = document.createElement("div");
+    body.className = "text";
+    body.textContent = text;
+    div.appendChild(who);
+    div.appendChild(body);
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    return div;
+  }
+
+  function enterChatMode() {
+    if (started) return;
+    started = true;
+    appEl.classList.remove("centered");
+    bar.style.display = "block";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    enterChatMode();
+    addEntry(text, "you");
+    input.value = "";
+    sendBtn.disabled = true;
+    const pending = addEntry("...", "system");
+    try {
+      const res = await fetch(API_BASE + "/supervise", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, session_id: sessionId })
+      });
+      const data = await res.json();
+      log.removeChild(pending);
+      sessionId = data.session_id;
+      localStorage.setItem("supervisor_session_id", sessionId);
+      addEntry(data.response, "agent");
+    } catch (err) {
+      log.removeChild(pending);
+      addEntry("Something went wrong reaching the supervisor agent. Try again.", "system");
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  });
+</script>
+</body>
+</html>

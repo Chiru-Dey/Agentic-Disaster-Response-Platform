@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disaster Relief - Request Help</title>
+<style>
+  :root { --primary:#2563eb; --primary-dark:#1d4ed8; --bg:#f8fafc; --bubble-agent:#e2e8f0; --text-dark:#1e293b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); }
+  #app { display:flex; flex-direction:column; height:100vh; }
+
+  /* --- Landing state: centered hero + input --- */
+  #app.centered { justify-content:center; align-items:center; }
+  #app.centered #chat { display:none; }
+  #app.centered #hero { display:block; text-align:center; margin-bottom:1.5rem; }
+  #app.centered form#composer { width:min(90vw, 480px); border-top:none; background:transparent; padding:0; }
+  #app.centered #input { box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+
+  /* --- Chat state: header + scroll area + bottom-pinned input --- */
+  #app:not(.centered) #hero { display:none; }
+  #app:not(.centered) { justify-content:flex-start; }
+
+  header { background:var(--primary); color:white; padding:1rem 1.25rem; text-align:center; }
+  header h1 { margin:0; font-size:1.15rem; }
+  header p { margin:0.25rem 0 0; font-size:0.85rem; opacity:0.9; }
+
+  #hero h1 { color:var(--text-dark); font-size:1.4rem; margin:0 0 0.4rem; }
+  #hero p { color:#64748b; font-size:0.95rem; margin:0; }
+
+  #chat { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.6rem; }
+  .msg { max-width:80%; padding:0.65rem 0.9rem; border-radius:14px; line-height:1.4; font-size:0.95rem; white-space:pre-wrap; }
+  .msg.user { align-self:flex-end; background:var(--primary); color:white; border-bottom-right-radius:4px; }
+  .msg.agent { align-self:flex-start; background:var(--bubble-agent); color:var(--text-dark); border-bottom-left-radius:4px; }
+  .msg.system { align-self:center; color:#64748b; font-size:0.8rem; font-style:italic; }
+
+  form#composer { display:flex; gap:0.5rem; padding:0.75rem; background:white; border-top:1px solid #e2e8f0; transition:all 0.2s ease; }
+  #input { flex:1; padding:0.7rem 0.9rem; border:1px solid #cbd5e1; border-radius:10px; font-size:0.95rem; }
+  #input:focus { outline:2px solid var(--primary); }
+  button { background:var(--primary); color:white; border:none; border-radius:10px; padding:0.7rem 1.2rem; font-size:0.95rem; cursor:pointer; }
+  button:hover { background:var(--primary-dark); }
+  button:disabled { opacity:0.6; cursor:default; }
+</style>
+</head>
+<body>
+  <div id="app" class="centered">
+    <header style="display:none" id="bar">
+      <h1>Disaster Relief Request Line</h1>
+    </header>
+    <div id="hero">
+      <h1>How can we help?</h1>
+      <p>Tell us what you need - water, food, shelter, medical help - and where.</p>
+    </div>
+    <div id="chat"></div>
+    <form id="composer">
+      <input id="input" type="text" placeholder="Type here to request help..." autocomplete="off" required />
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+  </div>
+<script>
+  let sessionId = localStorage.getItem("relief_session_id") || null;
+  const appEl = document.getElementById("app");
+  const bar = document.getElementById("bar");
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("composer");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("sendBtn");
+  let started = false;
+
+  function addMessage(text, role) {
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function enterChatMode() {
+    if (started) return;
+    started = true;
+    appEl.classList.remove("centered");
+    bar.style.display = "block";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    enterChatMode();
+    addMessage(text, "user");
+    input.value = "";
+    sendBtn.disabled = true;
+    addMessage("...", "system");
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, session_id: sessionId })
+      });
+      const data = await res.json();
+      chat.removeChild(chat.lastChild);
+      sessionId = data.session_id;
+      localStorage.setItem("relief_session_id", sessionId);
+      addMessage(data.response, "agent");
+    } catch (err) {
+      chat.removeChild(chat.lastChild);
+      addMessage("Sorry, something went wrong. Please try again in a moment.", "system");
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  });
+</script>
+</body>
+</html>

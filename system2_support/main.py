@@ -6,6 +6,12 @@ import os
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from pathlib import Path
+from fastapi.responses import FileResponse
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
 from pydantic import BaseModel
 from typing import Optional
 from google.adk import Runner
@@ -25,8 +31,8 @@ APP_NAME = "system2_support"
 session_service = InMemorySessionService()
 memory_service = InMemoryMemoryService()
 
-async def after_agent_callback(ctx: Context):
-    await ctx.add_session_to_memory()
+async def after_agent_callback(callback_context: Context):
+    await callback_context.add_session_to_memory()
 
 support_orchestrator_agent.after_agent_callback = after_agent_callback
 support_orchestrator_agent.tools.append(preload_memory)
@@ -43,6 +49,10 @@ app = FastAPI(
     description="Human-facing REST endpoint for relief request intake.",
     version="1.0.0",
 )
+
+@app.get("/")
+async def chat_ui():
+    return FileResponse(STATIC_DIR / "chat.html")
 
 app.add_middleware(
     CORSMiddleware,

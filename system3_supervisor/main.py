@@ -6,6 +6,12 @@ import os
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from pathlib import Path
+from fastapi.responses import FileResponse
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
 from pydantic import BaseModel
 from typing import Optional
 from google.adk import Runner
@@ -31,6 +37,10 @@ app = FastAPI(
     description="Human supervisor REST endpoint for dashboard queries and overrides.",
     version="1.0.0",
 )
+
+@app.get("/")
+async def supervisor_ui():
+    return FileResponse(STATIC_DIR / "supervisor.html")
 
 app.add_middleware(
     CORSMiddleware,
