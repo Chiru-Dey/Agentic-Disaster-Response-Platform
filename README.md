@@ -10,6 +10,10 @@ A multi-agent system built with **Google's Agent Development Kit (ADK)** for coo
    uv sync
    ```
 4. Configure environment variables (Firebase credentials, API keys)
+  ```env
+    GOOGLE_API_KEY=your-gemini-api-key-here
+    GROQ_API_KEY=your-groq-api-key-here
+  ```
 5. Run the three systems in separate terminals:
    - System 1:
      ```bash
